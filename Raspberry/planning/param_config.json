@@ -1,0 +1,20 @@
+{
+  "_description" : {"PIXELS_PER_METER":  "Number of pixels in 1 meter on the map",
+                    "CAR_SIZE": "Length of the car side in meters",
+                    "SAFETY_MARGIN": "Length in meters of the margin distance to be kept between robot and obstacles",
+                    "MOV_CODE":  "Code for movement orders of the robot in each direction"},
+  "PIXELS_PER_METER": 60,
+  "CAR_SIZE": 0.5,
+  "SAFETY_MARGIN": 0.05,
+  "MOV_CODE": {
+    "STOP": "f",
+    "FORWARD": "w",
+    "BACKWARD": "x",
+    "LEFT": "a",
+    "RIGHT": "d",
+    "FORWARD_LEFT": "q",
+    "FORWARD_RIGHT": "e",
+    "BACKWARD_LEFT": "z",
+    "BACKWARD_RIGHT": "c"
+  }
+}
