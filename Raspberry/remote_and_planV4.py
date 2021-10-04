@@ -10,8 +10,8 @@ import tkFileDialog as filedialog
 import os
 import io
 
-SPEED = 13.5 # cm/s 14.5
-SPEED_DIAG = 6.5 # cm/s
+SPEED = 13 # cm/s 14.5
+SPEED_DIAG = 8.5 # cm/s
 
 # key reserved as default, will stop the robot
 STOP_KEY = "p"
@@ -139,16 +139,28 @@ def write_config(stop_position, goal_pos, obstacle_pos = None):
         replan_config["Obstacle_pos"] = obstacle_pos
     
     directory = os.path.dirname(__file__)
+#     print(directory)
+    filename = "exists"
+#     for root, dirs, files in os.walk(directory):
+#         for filename in files:
+#             if filename[-4:] in [".png", ".tif"]:
+#                 map_file = filename
+#                 break
+#         if filename:
+#             break
     output_path = os.path.join("planning", "output")
-    binary_map_file = os.path.join(output_path, "map_binary.png")
-    processed_map_file = os.path.join(output_path, "map_processed.png")
+    map_file = os.path.join(output_path, "map_binary.png")
     params_file = os.path.join(output_path, "param_config.json")
-    binary_map_file = os.path.join(directory, binary_map_file)
-    processed_map_file = os.path.join(directory, processed_map_file)
+    if not filename:
+        print("Please, select image file containing the map")
+        master = tk.Tk()
+        master.withdraw()
+        map_file = filedialog.askopenfilename()
+        master.destroy()
+        del master
+    map_file = os.path.join(directory, map_file)
     params_file = os.path.join(directory, params_file)
-    
-    replan_config["Binary_map"] = binary_map_file
-    replan_config["Processed_map"] = processed_map_file
+    replan_config["Map_file"] = map_file
     replan_config["Params_file"] = params_file
     
     directory = os.path.dirname(__file__)
@@ -302,7 +314,8 @@ def remote_control_main():
             config_file = write_config(stop_position, route["Goal_pos"], obstacle_position)
             
             directory = os.path.dirname(__file__)
-            command = "python3 " + directory + "/planning/main_planning.py" + " " + config_file
+            directory = os.path.join(directory, "planning")
+            command = "python3 " + directory + "/main_planning.py" + " " + config_file
             # Execute planning
             print("Executing replanning of best path to goal...")
             try:
@@ -313,7 +326,7 @@ def remote_control_main():
                     print("Current robot position is [%i, %i]" % (stop_position[1], stop_position[0]))
                     print("Returning to manual driving mode")
                 else:
-                    route_file = directory + "/planning/output/route.json" # This file should be created by previous line
+                    route_file = directory + "/output/route.json" # This file should be created by previous line
                     robot_state = "load_route"
             except Exception:
                 robot_state = "manual_driving"
