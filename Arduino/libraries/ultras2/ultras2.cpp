@@ -35,14 +35,6 @@ Ultras2::Ultras2(int echoPin1, int trigPin1, int echoPin2,  int trigPin2, int ec
 //  specified before the class-function link. They also use the private variables
 //  saved in the constructor code.
 
-void Ultras2::initMsg(sensor_msgs::Range &uSonarRangeMsg){
-	uSonarRangeMsg.radiation_type = sensor_msgs::Range::ULTRASOUND;
-	uSonarRangeMsg.header.frame_id = "robot_base_link";
-	uSonarRangeMsg.field_of_view = 0.523599f; //30 degrees in radians
-	uSonarRangeMsg.min_range = 5;    // Centimeters
-	uSonarRangeMsg.max_range = 20000;       // Centimeters
-}
-
 void Ultras2::on(long &cm1, long &cm2, long &cm3, long &cm4){
 	digitalWrite(_trigPin1, LOW);
 	delayMicroseconds(2);
