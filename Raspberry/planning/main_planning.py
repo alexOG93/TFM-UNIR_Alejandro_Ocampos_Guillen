@@ -25,17 +25,14 @@ def main_func(input_files):
         goal_pos = input_domain["Goal_pos"][::-1]
         
         # Map loading and processing
-        map_binary_file = input_domain["Binary_map"]
-        map_processed_file = input_domain["Processed_map"]
-        map_binary = map_processing.get_bin_map(map_binary_file)
-        map_processed = map_processing.get_bin_map(map_processed_file)
+        map_file = input_domain["Map_file"]
+        map_binary = map_processing.get_bin_map(map_file)
         if "Obstacle_pos" in input_domain.keys():
-            map_binary, map_processed = map_processing.update_map(map_binary, map_processed, input_domain,
-                                                                  params["CAR_SIZE"], params["PIXELS_PER_METER"],
-                                                                  params["SAFETY_MARGIN"])
+            map_binary = map_processing.update_map(map_binary, input_domain, params["CAR_SIZE"],
+                                                   params["PIXELS_PER_METER"], params["SAFETY_MARGIN"])
 #         map_binary = map_processing.resize_map(map_binary, params)
-#         map_processed = map_processing.map_safety_margin(map_binary, params["CAR_SIZE"], params["PIXELS_PER_METER"],
-#                                                          params["SAFETY_MARGIN"])
+        map_processed = map_processing.map_safety_margin(map_binary, params["CAR_SIZE"], params["PIXELS_PER_METER"],
+                                                         params["SAFETY_MARGIN"])
 
     # Creating problem domain
     else:
@@ -75,8 +72,7 @@ def main_func(input_files):
             raise ValueError("Unknown method to input robot positions")
 
     eval_data.get_map_time()
-
-    map_processing.save_map(map_binary * 255, output_file="map_binary.png")
+    map_processing.save_map(map_binary*255, output_file="map_binary.png")
     map_processing.save_map(map_processed*255, output_file="map_processed.png")
 
     # Search starting

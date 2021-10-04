@@ -4,6 +4,7 @@ from matplotlib.image import imread
 import tifffile
 import cv2
 import os
+from math import ceil
 
 
 def get_point(map_bin: np.array):
@@ -107,14 +108,14 @@ def save_map(map_in, output_file="map.png"):
         return
 
 
-def update_map(map_bin, map_proc, input_domain, car_size, pixels_per_meter, meters_margin):
+def update_map(map_in, input_domain, car_size, pixels_per_meter, meters_margin):
     def add_margin(x_init, x_obs, obs_marg):
         proximity = x_obs - x_init
         if abs(proximity) < obs_marg and proximity != 0:
             if proximity > 0:
-                new_x = x_init + obs_marg
+                new_x = x_init + obs_marg + 2
             elif proximity < 0:
-                new_x = x_init - obs_marg
+                new_x = x_init - obs_marg - 2
             else:
                 raise ValueError("Input configuration places the robot on the position of an obstacle")
 
@@ -125,23 +126,27 @@ def update_map(map_bin, map_proc, input_domain, car_size, pixels_per_meter, mete
         return int(round(new_x, 0))
     init_pos = input_domain["Init_pos"][::-1]
     obstacle_pos = input_domain["Obstacle_pos"][::-1]
-    margin = int(round((meters_margin + car_size/2)*pixels_per_meter, 0))
+    margin = (meters_margin + car_size/2)*pixels_per_meter
     obstacle_pos[1] = add_margin(init_pos[1], obstacle_pos[1], margin)
     obstacle_pos[0] = add_margin(init_pos[0], obstacle_pos[0], margin)
     # Add obstacle to map
-    map_bin[obstacle_pos[0]][obstacle_pos[1]] = 0
-    for incrX in range(0, margin):
-        for incrY in range(0, margin):
-            map_proc[obstacle_pos[0] - incrX][obstacle_pos[1] - incrY] = 0
-            map_proc[obstacle_pos[0] - incrX][obstacle_pos[1] + incrY] = 0
-            map_proc[obstacle_pos[0] + incrX][obstacle_pos[1] - incrY] = 0
-            map_proc[obstacle_pos[0] + incrX][obstacle_pos[1] + incrY] = 0
-    return map_bin, map_proc
+    map_in[obstacle_pos[0]][obstacle_pos[1]] = 0
+    map_in[obstacle_pos[0]][obstacle_pos[1] + 1] = 0
+    map_in[obstacle_pos[0]][obstacle_pos[1] - 1] = 0
+    map_in[obstacle_pos[0] + 1][obstacle_pos[1]] = 0
+    map_in[obstacle_pos[0] + 1][obstacle_pos[1] + 1] = 0
+    map_in[obstacle_pos[0] + 1][obstacle_pos[1] - 1] = 0
+    map_in[obstacle_pos[0] - 1][obstacle_pos[1]] = 0
+    map_in[obstacle_pos[0] - 1][obstacle_pos[1] + 1] = 0
+    map_in[obstacle_pos[0] - 1][obstacle_pos[1] - 1] = 0
+    
+    
+    return map_in
 
 
 def map_safety_margin(map_in, car_size, pixels_per_meter, meters_margin):
     pixels_margin = meters_margin*pixels_per_meter
-    kernel_size = int(np.ceil(car_size*pixels_per_meter) + pixels_margin*2)
+    kernel_size = int(ceil(car_size*pixels_per_meter) + pixels_margin*2)
     kernel = np.ones((kernel_size, kernel_size), np.uint8)
     return cv2.erode(map_in.astype('uint8'), kernel, iterations=1)
 
@@ -150,9 +155,9 @@ def add_path_to_map(binary_map, path, car_size, pixels_per_meter):
     map_with_path = np.zeros((binary_map.shape[0], binary_map.shape[1]), dtype='uint8')
     car_pixels = int(car_size * pixels_per_meter)
     if car_pixels % 2:
-        kernel_size = int(np.ceil(car_pixels))
+        kernel_size = ceil(car_pixels)
     else:
-        kernel_size = int(np.ceil(car_pixels)) + 1
+        kernel_size = ceil(car_pixels) + 1
     kernel = np.ones((kernel_size, kernel_size), np.uint8)
     for state in path:
         map_with_path[state.position[0]][state.position[1]] = 150

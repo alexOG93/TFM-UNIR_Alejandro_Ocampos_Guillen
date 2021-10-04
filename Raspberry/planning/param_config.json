@@ -3,9 +3,9 @@
                     "CAR_SIZE": "Length of the car side in meters",
                     "SAFETY_MARGIN": "Length in meters of the margin distance to be kept between robot and obstacles",
                     "MOV_CODE":  "Code for movement orders of the robot in each direction"},
-  "PIXELS_PER_METER": 60,
+  "PIXELS_PER_METER": 10,
   "CAR_SIZE": 0.5,
-  "SAFETY_MARGIN": 0.05,
+  "SAFETY_MARGIN": 0.1,
   "MOV_CODE": {
     "STOP": "f",
     "FORWARD": "w",

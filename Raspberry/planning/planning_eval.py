@@ -31,25 +31,25 @@ class RunTime:
 
     def print_time(self, curr_time, dif_time, description):
         self.last_time = curr_time
-        if dif_time <= 0:
-            print(description + " less than 1 ms")
-        else:
-            print(description + " %.3f s" % round(dif_time, 3))
-        return
+#         if dif_time <= 0:
+#             print(description + " less than 1 ms")
+#         else:
+#             print(description + " %.3f s" % round(dif_time, 3))
+#         return
 
     def get_total_time(self):
         self.total_time = time.time() - self.init_time
-        print("Total execution time: %.3f s" % round(self.total_time, 3))
-        print("Check %f" % (self.total_time - self.map_time - self.search_time))
+#         print("Total execution time: %.3f s" % round(self.total_time, 3))
+#         print("Check %f" % (self.total_time - self.map_time - self.search_time))
         return
 
     def save_len(self, length, steps, states):
         self.route_len = length
         self.steps_num = steps
         self.states_num = states
-        print("Length of the route: %.2f cm" % self.route_len)
-        print("Number of steps: %i" % self.steps_num)
-        print("Number of visited states: %i" % self.states_num)
+#         print("Length of the route: %.2f cm" % self.route_len)
+#         print("Number of steps: %i" % self.steps_num)
+#         print("Number of visited states: %i" % self.states_num)
         return
 
     def write_data(self):
